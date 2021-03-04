@@ -37,7 +37,7 @@ public class ProfileServiceImpl implements ProfileService {
         Specification<Profile> specification = ((root, criteriaQuery, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
             if (!StringUtils.isEmpty(params.getName())) {
-                Predicate likeAccount = criteriaBuilder.like(root.get("name").as(String.class), params.getName() + "%");
+                Predicate likeAccount = criteriaBuilder.like(root.get("name").as(String.class), params.getName().trim() + "%");
                 predicates.add(likeAccount);
             }
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));

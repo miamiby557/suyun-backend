@@ -62,11 +62,12 @@ public class TransportOrder extends BaseEntity {
     private double inPickupFee;//提货费
     private double inSpecialFee;//特殊费用
     private double insuranceFee;//保险费
-    private double inFeeAmount;//运费合计
+    private double inFeeAmount;//应收运费
     private String transportType;//运输模式   零担/整车/空运
     private String vehicleType;//车型 4.2/7.6/9.6/13.5/16.5/17.5
     private String remark;
     private String transportNo;//走货单号
+    private String projectNo;//项目号
     private String transportChannel;//走货渠道
     private double outPickupFee;//提货费
     private double outTransportFee;//运费
@@ -79,6 +80,7 @@ public class TransportOrder extends BaseEntity {
     private double outFeeAmount;//应付金额
     private double profit;//毛利润
     private String profitPercent;//毛利率
+    private double salesFee;//销售费用
 
     private boolean calculate;//是否已经算过费用
     private LocalDateTime modifyTime = LocalDateTime.now();

@@ -20,7 +20,7 @@ public class OrderCreateDto implements Serializable {
     private String productName;//产品名称
     private String packageType;//包装方式
     private String calculateType;//计费方式
-
+    private String projectNo;
     private int itemCount;//件数
     private double volume;//总体积
     private double weight;//总重量

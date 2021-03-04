@@ -27,7 +27,7 @@ public class FeeDeclareController {
 
     @PostMapping("/querySubmit")
     public PageResult<FeeDeclareDto> querySubmit(@RequestBody QueryFeeDeclareParams params) {
-        params.setStatus(FeeDeclareStatus.SUBMITED);
+        params.setStatus(FeeDeclareStatus.SUBMITTED);
         return declareService.query(params);
     }
 
@@ -43,25 +43,25 @@ public class FeeDeclareController {
     }
 
     @PostMapping("/passed")
-    public Result passed(@RequestBody List<String> declareIds) {
+    public Result<String> passed(@RequestBody List<String> declareIds) {
         declareIds.forEach(declareService::passed);
         return Result.success();
     }
 
     @PostMapping("/modify")
-    public Result reApproval(@RequestBody FeeDeclareModifyDto reApprovalDto) {
+    public Result<String> reApproval(@RequestBody FeeDeclareModifyDto reApprovalDto) {
         declareService.modify(reApprovalDto);
         return Result.success();
     }
 
     @PostMapping("/reApproval")
-    public Result reApproval(@RequestBody List<String> declareIds) {
+    public Result<String> reApproval(@RequestBody List<String> declareIds) {
         declareIds.forEach(declareService::reApproval);
         return Result.success();
     }
 
     @PostMapping("/reject")
-    public Result reject(@RequestBody FeeDeclareRejectDto rejectDto) {
+    public Result<String> reject(@RequestBody FeeDeclareRejectDto rejectDto) {
         declareService.rejected(rejectDto);
         return Result.success();
     }

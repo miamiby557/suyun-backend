@@ -12,6 +12,8 @@ public interface OrderService {
 
     List<TransportOrder> queryAll(QueryOrderParams params);
 
+    List<TransportOrder> queryAll(ExportExcelDto exportExcelDto);
+
     void create(OrderCreateDto order);
 
     void batchCreate(List<ExcelOrderImportDto> importDtos);

@@ -14,7 +14,7 @@ public class QueryOrderParams extends PageParams {
     private LocalDate createTimeStart;
     private LocalDate createTimeEnd;
     private String deliveryNo;
-    private String consignNo;
+    private String cindaNo;
     private String transportNo;
     private String transportChannel;
     private String departureWarning;

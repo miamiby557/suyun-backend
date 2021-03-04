@@ -51,19 +51,19 @@ public class OrderServiceImpl implements OrderService {
         Specification<TransportOrder> specification = ((root, criteriaQuery, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
             if (!StringUtils.isEmpty(params.getDeliveryNo())) {
-                Predicate likeName = criteriaBuilder.like(root.get("deliveryNo").as(String.class), params.getDeliveryNo() + "%");
+                Predicate likeName = criteriaBuilder.like(root.get("deliveryNo").as(String.class), params.getDeliveryNo().trim() + "%");
                 predicates.add(likeName);
             }
-            if (!StringUtils.isEmpty(params.getConsignNo())) {
-                Predicate likeName = criteriaBuilder.like(root.get("consignNo").as(String.class), params.getConsignNo() + "%");
+            if (!StringUtils.isEmpty(params.getCindaNo())) {
+                Predicate likeName = criteriaBuilder.like(root.get("cindaNo").as(String.class), params.getCindaNo().trim() + "%");
                 predicates.add(likeName);
             }
             if (!StringUtils.isEmpty(params.getTransportNo())) {
-                Predicate likeName = criteriaBuilder.like(root.get("transportNo").as(String.class), params.getTransportNo() + "%");
+                Predicate likeName = criteriaBuilder.like(root.get("transportNo").as(String.class), params.getTransportNo().trim() + "%");
                 predicates.add(likeName);
             }
             if (!StringUtils.isEmpty(params.getClientName())) {
-                Predicate likeName = criteriaBuilder.like(root.get("clientName").as(String.class), params.getClientName() + "%");
+                Predicate likeName = criteriaBuilder.like(root.get("clientName").as(String.class), params.getClientName().trim() + "%");
                 predicates.add(likeName);
             }
             if (!StringUtils.isEmpty(params.getDepartureWarning())) {
@@ -71,11 +71,11 @@ public class OrderServiceImpl implements OrderService {
                 predicates.add(equal);
             }
             if (!StringUtils.isEmpty(params.getDeliveryWarning())) {
-                Predicate equal = criteriaBuilder.equal(root.get("deliveryWarning").as(String.class), params.getDeliveryWarning());
+                Predicate equal = criteriaBuilder.equal(root.get("deliveryWarning").as(String.class), params.getDeliveryWarning().trim());
                 predicates.add(equal);
             }
             if (!StringUtils.isEmpty(params.getTimeoutWarning())) {
-                Predicate equal = criteriaBuilder.equal(root.get("timeoutWarning").as(String.class), params.getTimeoutWarning());
+                Predicate equal = criteriaBuilder.equal(root.get("timeoutWarning").as(String.class), params.getTimeoutWarning().trim());
                 predicates.add(equal);
             }
             if (params.getDeliveryDateStart() != null && params.getDeliveryDateEnd() != null) {
@@ -118,6 +118,19 @@ public class OrderServiceImpl implements OrderService {
         });
         Sort sort = new Sort(Sort.Direction.DESC, "createTime");
         return orderRepository.findAll(specification, sort);
+    }
+
+    @Override
+    public List<TransportOrder> queryAll(ExportExcelDto exportExcelDto) {
+        Specification<TransportOrder> specification = ((root, criteriaQuery, criteriaBuilder) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            Predicate createTimeStart = criteriaBuilder.greaterThanOrEqualTo(root.get("deliveryDate"), exportExcelDto.getDeliveryDateStart().atStartOfDay());
+            Predicate createTimeEnd = criteriaBuilder.lessThanOrEqualTo(root.get("deliveryDate"), exportExcelDto.getDeliveryDateEnd().plusDays(1).atStartOfDay());
+            predicates.add(createTimeStart);
+            predicates.add(createTimeEnd);
+            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+        });
+        return orderRepository.findAll(specification);
     }
 
     @Override

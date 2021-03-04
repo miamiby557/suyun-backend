@@ -2,10 +2,7 @@ package com.szcinda.express;
 
 import com.szcinda.express.dto.*;
 import com.szcinda.express.params.QueryFeeDeclareParams;
-import com.szcinda.express.persistence.FeeDeclare;
-import com.szcinda.express.persistence.FeeDeclareRepository;
-import com.szcinda.express.persistence.OrderRepository;
-import com.szcinda.express.persistence.TransportOrder;
+import com.szcinda.express.persistence.*;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -30,10 +27,12 @@ public class FeeDeclareServiceImpl implements FeeDeclareService {
     private final FeeDeclareRepository declareRepository;
     private final SnowFlakeFactory snowFlakeFactory;
     private final OrderRepository orderRepository;
+    private final UserRepository userRepository;
 
-    public FeeDeclareServiceImpl(FeeDeclareRepository declareRepository, OrderRepository orderRepository) {
+    public FeeDeclareServiceImpl(FeeDeclareRepository declareRepository, OrderRepository orderRepository, UserRepository userRepository) {
         this.declareRepository = declareRepository;
         this.orderRepository = orderRepository;
+        this.userRepository = userRepository;
         this.snowFlakeFactory = SnowFlakeFactory.getInstance();
     }
 
@@ -42,7 +41,7 @@ public class FeeDeclareServiceImpl implements FeeDeclareService {
         Specification<FeeDeclare> specification = ((root, criteriaQuery, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
             if (StringUtils.hasLength(params.getCindaNo())) {
-                Predicate likeName = criteriaBuilder.like(root.get("cindaNo").as(String.class), params.getCindaNo() + "%");
+                Predicate likeName = criteriaBuilder.like(root.get("cindaNo").as(String.class), params.getCindaNo().trim() + "%");
                 predicates.add(likeName);
             }
             if (params.getCreateTimeStart() != null && params.getCreateTimeEnd() != null) {
@@ -85,14 +84,19 @@ public class FeeDeclareServiceImpl implements FeeDeclareService {
     public void createDeclare(FeeDeclareCreateDto createDto) {
         TransportOrder order = orderRepository.findFirstByCindaNo(createDto.getCindaNo());
         Assert.isTrue(order != null, String.format("没有找到先达单号[%s]的订单信息", createDto.getCindaNo()));
-        boolean canAdd = StringUtils.isEmpty(order.getSpecialFee1()) || StringUtils.isEmpty(order.getSpecialFee2()) || StringUtils.isEmpty(order.getSpecialFee3()) ||
+        /*boolean canAdd = StringUtils.isEmpty(order.getSpecialFee1()) || StringUtils.isEmpty(order.getSpecialFee2()) || StringUtils.isEmpty(order.getSpecialFee3()) ||
                 StringUtils.isEmpty(order.getSpecialFee4()) || StringUtils.isEmpty(order.getSpecialFee5());
-        Assert.isTrue(canAdd, "申报记录已经超过5条");
+        Assert.isTrue(canAdd, "申报记录已经超过5,不允许再申报");*/
         FeeDeclare declare = new FeeDeclare();
         BeanUtils.copyProperties(createDto, declare);
+        declare.setVehicleType(order.getVehicleType());
+        declare.setFrom(order.getFrom());
+        declare.setTo(order.getTo());
         declare.setId(snowFlakeFactory.nextId());
         declare.setCreateTime(LocalDateTime.now());
-        declare.setStatus(FeeDeclareStatus.SUBMITED);
+        declare.setStatus(FeeDeclareStatus.SUBMITTED);
+        User user = userRepository.findFirstByAccount(createDto.getPerson());
+        declare.setPerson(user.getName());
         declareRepository.save(declare);
     }
 
@@ -106,14 +110,14 @@ public class FeeDeclareServiceImpl implements FeeDeclareService {
         Assert.hasText(declareId, "ID不能为空");
         FeeDeclare declare = declareRepository.findFirstById(declareId);
         Assert.isTrue(FeeDeclareStatus.REJECTED.equals(declare.getStatus()), "请提交被驳回的费用申请记录");
-        declare.setStatus(FeeDeclareStatus.SUBMITED);//重新审批
+        declare.setStatus(FeeDeclareStatus.SUBMITTED);//重新审批
         declareRepository.save(declare);
     }
 
     @Override
     public void passed(String declareId) {
         FeeDeclare declare = declareRepository.findFirstById(declareId);
-        Assert.isTrue(FeeDeclareStatus.SUBMITED.equals(declare.getStatus()), "请选择提交状态的费用记录进行审批");
+        Assert.isTrue(FeeDeclareStatus.SUBMITTED.equals(declare.getStatus()), "请选择提交状态的费用记录进行审批");
         declare.setStatus(FeeDeclareStatus.PASSED);
         declareRepository.save(declare);
     }
@@ -136,7 +140,7 @@ public class FeeDeclareServiceImpl implements FeeDeclareService {
         Assert.isTrue(order != null, String.format("没有找到先达单号[%s]的订单信息", declare.getCindaNo()));
         BeanUtils.copyProperties(modifyDto, declare, "id", "version");
         declare.setTransportChannel(modifyDto.getTransportChannel());
-        declare.setStatus(FeeDeclareStatus.SUBMITED);
+        declare.setStatus(FeeDeclareStatus.SUBMITTED);
         declareRepository.save(declare);
     }
 }

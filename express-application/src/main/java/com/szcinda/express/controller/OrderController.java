@@ -6,6 +6,7 @@ import com.alibaba.excel.metadata.Sheet;
 import com.alibaba.excel.support.ExcelTypeEnum;
 import com.szcinda.express.Address;
 import com.szcinda.express.OrderService;
+import com.szcinda.express.SchedulerService;
 import com.szcinda.express.configuration.UserLoginToken;
 import com.szcinda.express.controller.dto.ExcelInsertDto;
 import com.szcinda.express.controller.dto.ReportParams;
@@ -49,7 +50,7 @@ public class OrderController {
 
     @UserLoginToken
     @PostMapping("/create")
-    public Result createOrder(@RequestBody OrderCreateDto createDto) {
+    public Result<String> createOrder(@RequestBody OrderCreateDto createDto) {
         orderService.create(createDto);
         return Result.success();
     }
@@ -62,14 +63,14 @@ public class OrderController {
 
     @UserLoginToken
     @PostMapping("/update")
-    public Result update(@RequestBody OrderUpdateDto updateDto) {
+    public Result<String> update(@RequestBody OrderUpdateDto updateDto) {
         orderService.update(updateDto);
         return Result.success();
     }
 
     @UserLoginToken
     @PostMapping("/insertFeeDeclare")
-    public Result insertFeeDeclare(@RequestBody FeeDeclareInsertToDBDto insertToDBDto) {
+    public Result<String> insertFeeDeclare(@RequestBody FeeDeclareInsertToDBDto insertToDBDto) {
         orderService.insertFeeDeclare(insertToDBDto);
         return Result.success();
     }
@@ -81,13 +82,13 @@ public class OrderController {
 
     @UserLoginToken
     @PostMapping("/insertByRPA")
-    public Result insertByRPA(@RequestBody RPAInsertToDBDto rpaInsertToDBDto) {
+    public Result<String> insertByRPA(@RequestBody RPAInsertToDBDto rpaInsertToDBDto) {
         orderService.insertByRPA(rpaInsertToDBDto);
         return Result.success();
     }
 
     @PostMapping("/orderImport")
-    public Result orderImport(@RequestParam("file") MultipartFile file) throws Exception {
+    public Result<String> orderImport(@RequestParam("file") MultipartFile file) throws Exception {
         // 解析每行结果在listener中处理
         InputStream inputStream = file.getInputStream();
         try {
@@ -150,6 +151,11 @@ public class OrderController {
         }
     }
 
+    @PostMapping("/search")
+    public List<TransportOrder> search(@RequestBody ExportExcelDto exportExcelDto) {
+        return orderService.queryAll(exportExcelDto);
+    }
+
     private List<TransportOrder> queryAll(String createTimeStartString, String createTimeEndString, String clientName, String carrierName) {
         Assert.isTrue(createTimeStartString.length() == 10, "日期格式必须是YYYY-MM-DD");
         Assert.isTrue(createTimeEndString.length() == 10, "日期格式必须是YYYY-MM-DD");
@@ -159,6 +165,14 @@ public class OrderController {
         params.setCreateTimeStart(LocalDate.parse(createTimeStartString));
         params.setCreateTimeEnd(LocalDate.parse(createTimeEndString));
         return orderService.queryAll(params);
+    }
+
+    //下载应付对账
+    @PostMapping("/exportExcel")
+    public Result<String> exportExcel(@RequestBody ExportExcelDto exportExcelDto){
+        Assert.isTrue(exportExcelDto.getDeliveryDateStart().isBefore(exportExcelDto.getDeliveryDateEnd()),"开始时间必须小于结束时间");
+        SchedulerService.queue.add(exportExcelDto);
+        return Result.success();
     }
 
 
@@ -206,7 +220,7 @@ public class OrderController {
     }
 
     @GetMapping("/initOrder")
-    public Result initOrder() {
+    public Result<String> initOrder() {
         Address from = new Address("440305", "广东省", "深圳市", "南山区", "南山西丽茶光路", "黄先生", "13112274760", "先达速运");
         Address to1 = new Address("3401", "重庆市", "重庆市", "", "安徽合肥", "黄先生", "13112274760", "收货公司");
         Address to3 = new Address("3404", "重庆市", "重庆市", "", "安徽淮南", "黄先生", "13112274760", "收货公司");
@@ -254,7 +268,7 @@ public class OrderController {
     }
 
     @PostMapping("/addTracking")
-    public Result addTracking(@RequestBody CreateTrackingDto createTrackingDto) {
+    public Result<String> addTracking(@RequestBody CreateTrackingDto createTrackingDto) {
         orderService.addTracking(createTrackingDto);
         return Result.success();
     }

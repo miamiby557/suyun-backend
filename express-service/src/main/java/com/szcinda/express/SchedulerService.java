@@ -2,14 +2,12 @@ package com.szcinda.express;
 
 import com.alibaba.excel.EasyExcelFactory;
 import com.alibaba.excel.metadata.Sheet;
+import com.szcinda.express.dto.ExportExcelDto;
 import com.szcinda.express.listener.LingDanPriceDto;
 import com.szcinda.express.listener.LingDanPriceListener;
 import com.szcinda.express.listener.ZhengChePriceDto;
 import com.szcinda.express.listener.ZhengChePriceListener;
-import com.szcinda.express.persistence.FeeDeclare;
-import com.szcinda.express.persistence.FeeDeclareRepository;
-import com.szcinda.express.persistence.OrderRepository;
-import com.szcinda.express.persistence.TransportOrder;
+import com.szcinda.express.persistence.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -24,6 +22,7 @@ import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 @Component
 @Transactional
@@ -32,12 +31,16 @@ public class SchedulerService {
     @Value("${fee.file.path}")
     private String filePath;
 
+    public static final ConcurrentLinkedQueue<ExportExcelDto> queue = new ConcurrentLinkedQueue<>();
+
     private final OrderRepository orderRepository;
     private final FeeDeclareRepository declareRepository;
+    private final UserRepository userRepository;
 
-    public SchedulerService(OrderRepository orderRepository, FeeDeclareRepository feeDeclareRepository) {
+    public SchedulerService(OrderRepository orderRepository, FeeDeclareRepository feeDeclareRepository, UserRepository userRepository) {
         this.orderRepository = orderRepository;
         this.declareRepository = feeDeclareRepository;
+        this.userRepository = userRepository;
     }
 
     @Scheduled(cron = "0 0/30 * * * ? ") // 30分钟 生成应收应付费用
@@ -189,7 +192,7 @@ public class SchedulerService {
         System.out.println("生成应收应付费用结束.......");
     }
 
-    @Scheduled(cron = "0 0/15 * * * ? ") // 15分钟 审批
+    @Scheduled(cron = "0 0/1 * * * ? ") // 1分钟 审批
     private void approvalFee() {
         System.out.println("操作审批费用开始.......");
         Specification<FeeDeclare> specification = ((root, criteriaQuery, criteriaBuilder) -> {
@@ -207,11 +210,18 @@ public class SchedulerService {
             String cindaNo = feeDeclare.getCindaNo();
             TransportOrder order = orderRepository.findFirstByCindaNo(cindaNo);
             if (order != null) {
+                // 更新应收费用
                 if (feeDeclare.getInCome() != null && feeDeclare.getInCome() > 0) {
-                    order.setInShippingFee(feeDeclare.getInCome());
+                    order.setInFeeAmount(feeDeclare.getInCome());
                 }
-                boolean add = false;
-                if (!StringUtils.hasText(order.getSpecialFee1())) {
+                // 更新应付费用
+                order.setOutFeeAmount(feeDeclare.getMoney());
+                // 更新销售费用
+                order.setSalesFee((order.getInFeeAmount() * 0.91 - order.getOutFeeAmount()) * 0.6);
+                // 更新利润
+                order.setProfit((order.getInFeeAmount() - order.getOutFeeAmount() / 0.89) / 1.09 - order.getSalesFee());
+//                boolean add = false;
+                /*if (!StringUtils.hasText(order.getSpecialFee1())) {
                     order.setSpecialFee1(feeDeclare.getFeeItem() + ":" + feeDeclare.getMoney());
                     add = true;
                 } else if (!StringUtils.hasText(order.getSpecialFee2())) {
@@ -226,10 +236,11 @@ public class SchedulerService {
                 } else if (!StringUtils.hasText(order.getSpecialFee5())) {
                     order.setSpecialFee5(feeDeclare.getFeeItem() + ":" + feeDeclare.getMoney());
                     add = true;
-                }
-                order.refreshOutTransportFee();
+                }*/
+//                order.refreshOutTransportFee();
                 orderRepository.save(order);
-                if (!add) {
+                feeDeclare.setStatus(FeeDeclareStatus.DONE);
+                /*if (!add) {
                     feeDeclare.setStatus(FeeDeclareStatus.REJECTED);
                     if (StringUtils.hasText(feeDeclare.getRejectReason())) {
                         feeDeclare.setRejectReason(feeDeclare.getRejectReason() + ";申报记录已经超过5条");
@@ -238,7 +249,7 @@ public class SchedulerService {
                     }
                 } else {
                     feeDeclare.setStatus(FeeDeclareStatus.DONE);
-                }
+                }*/
             } else {
                 feeDeclare.setStatus(FeeDeclareStatus.REJECTED);
                 if (StringUtils.hasText(feeDeclare.getRejectReason())) {
@@ -250,5 +261,23 @@ public class SchedulerService {
         });
         declareRepository.save(feeDeclares);
         System.out.println("操作审批费用结束.......");
+    }
+
+
+    @Scheduled(cron = "0 0/2 * * * ? ") // 15分钟 审批
+    private void exportExcel() {
+        ExportExcelDto poll = queue.poll();
+        if (poll != null) {
+            User user = userRepository.findFirstByAccount(poll.getUserAccount());
+            /*Specification<TransportOrder> specification = ((root, criteriaQuery, criteriaBuilder) -> {
+                List<Predicate> predicates = new ArrayList<>();
+                Predicate createTimeStart = criteriaBuilder.greaterThanOrEqualTo(root.get("deliveryDate"), poll.getDeliveryDateStart().atStartOfDay());
+                Predicate createTimeEnd = criteriaBuilder.lessThanOrEqualTo(root.get("deliveryDate"), poll.getDeliveryDateEnd().plusDays(1).atStartOfDay());
+                predicates.add(createTimeStart);
+                predicates.add(createTimeEnd);
+                return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+            });
+            List<TransportOrder> transportOrders = orderRepository.findAll(specification);*/
+        }
     }
 }
