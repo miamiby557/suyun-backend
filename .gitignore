@@ -1,0 +1,4 @@
+# Project exclude paths
+/express-application/target/
+/express-repository/target/
+/express-service/target/

@@ -1,0 +1,257 @@
+{
+  "data": {
+    "measurement": {
+      "id": 19803060,
+      "phone": "13112274760",
+      "height": 170.0,
+      "weight": 55.0,
+      "gender": 1,
+      "age": 27,
+      "score": 4,
+      "outline": {
+        "bmi": 19.0,
+        "smm": 27.0,
+        "pbf": 10.8,
+        "muscle": 45.8,
+        "bfm": 5.9,
+        "vfi": 2.0,
+        "bmr": 1430.0,
+        "cbc": 2288.0,
+        "smm_control": 7.4,
+        "dfm_control": null,
+        "body_age": 27
+      },
+      "inclusion": 1,
+      "device_sn": "1101151930730",
+      "member_id": "",
+      "attachment_id": "",
+      "attachment_rom": "",
+      "login_type": 12,
+      "start_time": "2019-04-30 16:21:04"
+    },
+    "composition": {
+      "weight": {
+        "value": 55.0,
+        "grade": 1,
+        "prv": [
+          57.2,
+          69.9
+        ]
+      },
+      "fat": {
+        "value": 5.9,
+        "grade": 1,
+        "prv": [
+          6.4,
+          12.7
+        ]
+      },
+      "fmm": null,
+      "mineral": {
+        "value": 3.3,
+        "grade": 1,
+        "prv": [
+          3.6,
+          4.0
+        ]
+      },
+      "muscle": {
+        "value": 45.8,
+        "grade": 1,
+        "prv": [
+          47.3,
+          53.2
+        ]
+      },
+      "protein": {
+        "value": 10.2,
+        "grade": 2,
+        "prv": [
+          10.2,
+          11.4
+        ]
+      },
+      "tbw": {
+        "value": 35.6,
+        "grade": 1,
+        "prv": [
+          37.1,
+          41.8
+        ]
+      },
+      "whfr": {
+        "value": 0.83,
+        "grade": null,
+        "prv": [
+          0.8,
+          0.9
+        ]
+      },
+      "pbf": {
+        "value": 10.8,
+        "grade": 2,
+        "prv": [
+          10.0,
+          20.0
+        ]
+      },
+      "smm": {
+        "value": 27.0,
+        "grade": 2,
+        "prv": [
+          26.1,
+          31.9
+        ]
+      },
+      "vfi": {
+        "value": 2.0,
+        "grade": 2,
+        "prv": [
+          10.0,
+          14.0
+        ]
+      },
+      "bmr": {
+        "value": 1430.0,
+        "grade": 1,
+        "prv": [
+          1469.0,
+          1606.0
+        ]
+      },
+      "tee": {
+        "value": 2288.0,
+        "grade": null,
+        "prv": null
+      },
+      "bmi": {
+        "value": 19.0,
+        "grade": 2,
+        "prv": [
+          18.5,
+          24.0
+        ]
+      },
+      "figure": {
+        "grade": null,
+        "map": null
+      },
+      "evaluation": {
+        "fat": {
+          "grade": 2
+        },
+        "weakness": {
+          "grade": 4
+        },
+        "nutrition": {
+          "grade": 4
+        },
+        "abdominal_fat": {
+          "grade": 1
+        }
+      },
+      "girth": null,
+      "segmental_muscle": {
+        "tr": {
+          "value": 21.4,
+          "grade": 2,
+          "prv": [
+            21.4,
+            26.2
+          ]
+        },
+        "rl": {
+          "value": 8.3,
+          "grade": 2,
+          "prv": [
+            7.9,
+            9.6
+          ]
+        },
+        "ra": {
+          "value": 2.5,
+          "grade": 1,
+          "prv": [
+            2.6,
+            3.2
+          ]
+        },
+        "ll": {
+          "value": 8.2,
+          "grade": 2,
+          "prv": [
+            7.9,
+            9.6
+          ]
+        },
+        "la": {
+          "value": 2.5,
+          "grade": 1,
+          "prv": [
+            2.6,
+            3.2
+          ]
+        }
+      },
+      "segmental_fat": {
+        "tr": {
+          "value": 1.6,
+          "grade": 1,
+          "prv": [
+            3.4,
+            6.7
+          ]
+        },
+        "rl": {
+          "value": 1.2,
+          "grade": 2,
+          "prv": [
+            1.1,
+            2.2
+          ]
+        },
+        "ra": {
+          "value": 0.22,
+          "grade": 1,
+          "prv": [
+            0.38,
+            0.76
+          ]
+        },
+        "ll": {
+          "value": 1.2,
+          "grade": 2,
+          "prv": [
+            1.1,
+            2.2
+          ]
+        },
+        "la": {
+          "value": 0.21,
+          "grade": 1,
+          "prv": [
+            0.38,
+            0.76
+          ]
+        }
+      },
+      "strong_index": {
+        "value": 17.0,
+        "grade": null,
+        "prv": [
+          19.5,
+          21.5
+        ]
+      },
+      "body_age": {
+        "value": 27.0
+      },
+      "muscle_control": {
+        "value": 7.4
+      },
+      "fat_control": {
+        "value": 0.0
+      }
+    }
+  }
+}
