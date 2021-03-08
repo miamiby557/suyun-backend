@@ -72,7 +72,7 @@ public class ProfileServiceImpl implements ProfileService {
 
     @Override
     public List<Profile> findByName(String name) {
-        return profileRepository.findByName(name);
+        return profileRepository.findByName(name.trim());
     }
 
     @Override
