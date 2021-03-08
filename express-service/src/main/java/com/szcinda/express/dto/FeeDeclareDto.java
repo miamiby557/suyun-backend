@@ -5,6 +5,7 @@ import com.szcinda.express.FeeDeclareStatus;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 @Data
 public class FeeDeclareDto implements Serializable {
@@ -26,4 +27,5 @@ public class FeeDeclareDto implements Serializable {
     private String remark;//备注
     private String rejectReason;//驳回原因
     private String person;
+    private LocalDateTime createTime;
 }
