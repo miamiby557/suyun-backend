@@ -135,6 +135,8 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public void create(OrderCreateDto order) {
+        Assert.hasText(order.getFrom().getDistrict(),"请重新选择一个始发省市区");
+        Assert.hasText(order.getTo().getDistrict(),"请重新选择一个目的省市区");
         TransportOrder createOrder = new TransportOrder();
         BeanUtils.copyProperties(order, createOrder);
         createOrder.setId(snowFlakeFactory.nextId());

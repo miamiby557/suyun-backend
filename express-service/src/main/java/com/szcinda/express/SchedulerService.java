@@ -265,10 +265,15 @@ public class SchedulerService {
 
 
     @Scheduled(cron = "0 0/2 * * * ? ") // 15分钟 审批
-    private void exportExcel() {
+    private void exportExcel() throws Exception{
         ExportExcelDto poll = queue.poll();
         if (poll != null) {
+            System.out.println("start python");
             User user = userRepository.findFirstByAccount(poll.getUserAccount());
+            String email = user.getEmail();
+            String[] args1 = new String[] { "C:\\Users\\Administrator\\AppData\\Local\\Programs\\Python\\Python37\\python.exe", "C:\\export.py", poll.getDeliveryDateStart().toString(), poll.getDeliveryDateEnd().toString(), email};
+            Runtime.getRuntime().exec(args1);
+            System.out.println("end python");
             /*Specification<TransportOrder> specification = ((root, criteriaQuery, criteriaBuilder) -> {
                 List<Predicate> predicates = new ArrayList<>();
                 Predicate createTimeStart = criteriaBuilder.greaterThanOrEqualTo(root.get("deliveryDate"), poll.getDeliveryDateStart().atStartOfDay());
