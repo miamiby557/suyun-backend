@@ -50,6 +50,12 @@ public class FeeDeclareServiceImpl implements FeeDeclareService {
                 Predicate end = criteriaBuilder.lessThanOrEqualTo(root.get("createTime"), params.getCreateTimeEnd().atTime(23, 59, 59));
                 predicates.add(end);
             }
+            if (params.getDeliveryDateStart() != null && params.getDeliveryDateEnd() != null) {
+                Predicate start = criteriaBuilder.greaterThanOrEqualTo(root.get("deliveryDate"), params.getDeliveryDateStart().atStartOfDay());
+                predicates.add(start);
+                Predicate end = criteriaBuilder.lessThanOrEqualTo(root.get("deliveryDate"), params.getDeliveryDateEnd().atTime(23, 59, 59));
+                predicates.add(end);
+            }
             if (params.getStatus() != null) {
                 Predicate equal = criteriaBuilder.equal(root.get("status").as(FeeDeclareStatus.class), params.getStatus());
                 predicates.add(equal);

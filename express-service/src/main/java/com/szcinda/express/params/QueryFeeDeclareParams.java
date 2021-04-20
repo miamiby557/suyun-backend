@@ -12,5 +12,7 @@ public class QueryFeeDeclareParams extends PageParams {
     private String cindaNo;
     private LocalDate createTimeStart;
     private LocalDate createTimeEnd;
+    private LocalDate deliveryDateStart;
+    private LocalDate deliveryDateEnd;
     private FeeDeclareStatus status;
 }

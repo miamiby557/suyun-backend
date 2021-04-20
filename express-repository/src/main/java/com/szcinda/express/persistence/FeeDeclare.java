@@ -8,6 +8,7 @@ import lombok.EqualsAndHashCode;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -15,6 +16,7 @@ import javax.validation.constraints.NotNull;
 public class FeeDeclare extends BaseEntity {
     private String clientName;
     private String deliveryNo;
+    private LocalDateTime deliveryDate;//发货日期
     @Embedded
     @AttributeOverrides({
             @AttributeOverride(name = "district", column = @Column(name = "from_district")),
