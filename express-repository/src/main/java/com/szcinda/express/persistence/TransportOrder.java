@@ -63,6 +63,8 @@ public class TransportOrder extends BaseEntity {
     private double inSpecialFee;//特殊费用
     private double insuranceFee;//保险费
     private double inFeeAmount;//应收运费
+    private double exceptionFee; // 异常费用
+    private double inFeeCount; // 应收总和
     private String transportType;//运输模式   零担/整车/空运
     private String vehicleType;//车型 4.2/7.6/9.6/13.5/16.5/17.5
     private String remark;

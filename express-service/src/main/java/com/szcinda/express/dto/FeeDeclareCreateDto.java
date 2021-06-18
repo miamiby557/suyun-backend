@@ -15,6 +15,7 @@ public class FeeDeclareCreateDto implements Serializable {
     private Address to;//收货地址
     private String vehicleType;//车型 4.2/7.6/9.6/13.5/16.5/17.5
     private double inCome;//应收
+    private double exceptionFee; // 异常费用
     private String cindaNo;//先达单号
     private String transportChannel;
     private String feeItem;

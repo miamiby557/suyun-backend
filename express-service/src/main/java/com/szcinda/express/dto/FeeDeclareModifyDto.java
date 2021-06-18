@@ -10,6 +10,7 @@ public class FeeDeclareModifyDto implements Serializable {
     private String clientName;
     private String deliveryNo;
     private Double inCome;
+    private double exceptionFee; // 异常费用
     private String transportChannel;
     private String feeItem;
     private double upstairsFee;//上楼费

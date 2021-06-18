@@ -211,15 +211,19 @@ public class SchedulerService {
             TransportOrder order = orderRepository.findFirstByCindaNo(cindaNo);
             if (order != null) {
                 // 更新应收费用
-                if (feeDeclare.getInCome() != null && feeDeclare.getInCome() > 0) {
+                if (feeDeclare.getInCome() != null) {
                     order.setInFeeAmount(feeDeclare.getInCome());
                 }
+                if (feeDeclare.getExceptionFee() != null) {
+                    order.setExceptionFee(feeDeclare.getExceptionFee());
+                }
+                order.setInFeeCount(order.getInFeeAmount() + order.getExceptionFee());
                 // 更新应付费用
                 order.setOutFeeAmount(feeDeclare.getMoney());
                 // 更新销售费用
                 order.setSalesFee((order.getInFeeAmount() * 0.91 - order.getOutFeeAmount()) * 0.6);
                 // 更新利润
-                order.setProfit((order.getInFeeAmount() - order.getOutFeeAmount() / 0.89) / 1.09 - order.getSalesFee());
+                order.setProfit((order.getInFeeCount() - order.getOutFeeAmount() / 0.89) / 1.09 - order.getSalesFee());
 //                boolean add = false;
                 /*if (!StringUtils.hasText(order.getSpecialFee1())) {
                     order.setSpecialFee1(feeDeclare.getFeeItem() + ":" + feeDeclare.getMoney());
@@ -265,13 +269,13 @@ public class SchedulerService {
 
 
     @Scheduled(cron = "0 0/2 * * * ? ") // 15分钟 审批
-    private void exportExcel() throws Exception{
+    private void exportExcel() throws Exception {
         ExportExcelDto poll = queue.poll();
         if (poll != null) {
             System.out.println("start python");
             User user = userRepository.findFirstByAccount(poll.getUserAccount());
             String email = user.getEmail();
-            String[] args1 = new String[] { "C:\\Users\\Administrator\\AppData\\Local\\Programs\\Python\\Python37\\python.exe", "C:\\export.py", poll.getDeliveryDateStart().toString(), poll.getDeliveryDateEnd().toString(), email};
+            String[] args1 = new String[]{"C:\\Users\\Administrator\\AppData\\Local\\Programs\\Python\\Python37\\python.exe", "C:\\export.py", poll.getDeliveryDateStart().toString(), poll.getDeliveryDateEnd().toString(), email};
             Runtime.getRuntime().exec(args1);
             System.out.println("end python");
             /*Specification<TransportOrder> specification = ((root, criteriaQuery, criteriaBuilder) -> {

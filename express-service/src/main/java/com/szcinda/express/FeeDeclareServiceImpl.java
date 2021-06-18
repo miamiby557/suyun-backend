@@ -103,6 +103,7 @@ public class FeeDeclareServiceImpl implements FeeDeclareService {
         declare.setStatus(FeeDeclareStatus.SUBMITTED);
         User user = userRepository.findFirstByAccount(createDto.getPerson());
         declare.setPerson(user.getName());
+        declare.setInFeeCount(createDto.getInCome() + createDto.getExceptionFee());
         declareRepository.save(declare);
     }
 
@@ -141,12 +142,12 @@ public class FeeDeclareServiceImpl implements FeeDeclareService {
     public void modify(FeeDeclareModifyDto modifyDto) {
         Assert.hasText(modifyDto.getId(), "ID不能为空");
         FeeDeclare declare = declareRepository.findFirstById(modifyDto.getId());
-//        Assert.isTrue(FeeDeclareStatus.SUBMITED.equals(declare.getStatus()),"只能修改已提交状态的申请记录");
         TransportOrder order = orderRepository.findFirstByCindaNo(declare.getCindaNo());
         Assert.isTrue(order != null, String.format("没有找到先达单号[%s]的订单信息", declare.getCindaNo()));
         BeanUtils.copyProperties(modifyDto, declare, "id", "version");
         declare.setTransportChannel(modifyDto.getTransportChannel());
         declare.setStatus(FeeDeclareStatus.SUBMITTED);
+        declare.setInFeeCount(modifyDto.getInCome() + modifyDto.getExceptionFee());
         declareRepository.save(declare);
     }
 }
